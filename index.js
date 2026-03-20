@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.post('/generate-card', async (req, res) => {
     console.log('Request body:', req.body);
-    const { phone, name, membership_id, epic_no, ac_no, constituency } = req.body;
+    const { phone, name, membership_id, epic_no, ac_no, constituency,photo_url } = req.body;
 
     if (!phone || !name) {
         return res.status(400).json({ error: 'phone and name are required' });
@@ -21,8 +21,8 @@ app.post('/generate-card', async (req, res) => {
 
         // res.set('Content-Type', 'image/png');
         // return res.send(imageBuffer);
-        const imageBuffer = await generateCard(phone, name, membership_id, epic_no, ac_no, constituency);
-        const resized = await sharp(imageBuffer).resize(300).toBuffer();
+        const imageBuffer = await generateCard(phone, name, membership_id, epic_no, ac_no, constituency,photo_url);
+        const resized = await sharp(imageBuffer).resize(600).toBuffer();
         res.set('Content-Type', 'image/png');
         return res.send(resized);
 

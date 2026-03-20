@@ -6,11 +6,19 @@ const path = require('path');
 const fontRegular = fs.readFileSync(path.join(__dirname, 'fonts', 'Roboto-Regular.ttf'));
 const fontBold = fs.readFileSync(path.join(__dirname, 'fonts', 'Roboto-Bold.ttf'));
 const photoBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'user.png')).toString('base64');
-const logoBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'inc.png')).toString('base64');
+// const logoBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'inc.png')).toString('base64');
 const qrBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'qr.png')).toString('base64');
+const logoBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'inc_logo.png')).toString('base64');
 
-async function generateCard(phone, name, membership_id, epic_no, ac_no, constituency) {
 
+async function generateCard(phone, name, membership_id, epic_no, ac_no, constituency,photo_url) {
+if (photo_url) {
+    const response = await fetch(photo_url);
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    const mime = response.headers.get('content-type') || 'image/jpeg';
+    photoSrc = `data:${mime};base64,${base64}`;
+  }
   const element = {
     type: 'div',
     props: {
@@ -21,9 +29,9 @@ async function generateCard(phone, name, membership_id, epic_no, ac_no, constitu
         flexDirection: 'column',
         fontFamily: 'Roboto',
         borderRadius: 20,
-        borderWidth: 2,
+        // borderWidth: 2,
         borderStyle: 'solid',
-        borderColor: 'white',
+        // borderColor: 'white',
       },
       children: [
         {
@@ -50,7 +58,7 @@ async function generateCard(phone, name, membership_id, epic_no, ac_no, constitu
                     type: 'img',
                     props: {
                       src: `data:image/png;base64,${logoBase64}`,
-                      style: { height: 70, width: 70 }
+                      style: { height: 70, width: 50 }
                     }
                   }]
                 }
@@ -91,7 +99,7 @@ async function generateCard(phone, name, membership_id, epic_no, ac_no, constitu
               {
                 type: 'img',
                 props: {
-                  src: `data:image/png;base64,${photoBase64}`,
+                  src: photoSrc,
                   style: { width: 130, height: 160 }
                 }
               },
@@ -111,13 +119,13 @@ async function generateCard(phone, name, membership_id, epic_no, ac_no, constitu
                 }
               },
               // QR code
-              {
-                type: 'img',
-                props: {
-                  src: `data:image/png;base64,${qrBase64}`,
-                  style: { width: 100, height: 100, alignSelf: 'flex-end' }
-                }
-              }
+              // {
+              //   type: 'img',
+              //   props: {
+              //     src: `data:image/png;base64,${qrBase64}`,
+              //     style: { width: 100, height: 100, alignSelf: 'flex-end' }
+              //   }
+              // }
             ]
           }
         },
