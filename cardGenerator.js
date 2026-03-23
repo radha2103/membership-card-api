@@ -40,7 +40,7 @@ if (photo_url) {
             style: { display: 'flex', flexDirection: 'column', height: 80, position: 'relative' },
             children: [
               // Stripes
-              { type: 'div', props: { style: { flex: 1, backgroundColor: '#FF9900', borderTopLeftRadius: 20, borderTopRightRadius: 20 } } },
+              { type: 'div', props: { style: { flex: 1, backgroundColor: '#f37022', borderTopLeftRadius: 20, borderTopRightRadius: 20 } } },
               { type: 'div', props: { style: { flex: 1, backgroundColor: '#ffffff' } } },
               { type: 'div', props: { style: { flex: 1, backgroundColor: '#138808' } } },
               // Logo centered on top of stripes
@@ -58,7 +58,7 @@ if (photo_url) {
                     type: 'img',
                     props: {
                       src: `data:image/png;base64,${logoBase64}`,
-                      style: { height: 70, width: 50 }
+                      style: { height: 71, width: 65 }
                     }
                   }]
                 }
