@@ -1,3 +1,12 @@
+require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+
 const satori = require('satori').default;
 const sharp = require('sharp');
 const fs = require('fs');
@@ -118,14 +127,6 @@ if (photo_url) {
                   ]
                 }
               },
-              // QR code
-              // {
-              //   type: 'img',
-              //   props: {
-              //     src: `data:image/png;base64,${qrBase64}`,
-              //     style: { width: 100, height: 100, alignSelf: 'flex-end' }
-              //   }
-              // }
             ]
           }
         },
@@ -161,7 +162,20 @@ if (photo_url) {
   });
 
   const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
-  return pngBuffer;
+  // return pngBuffer;
+
+
+  const imageUrl = await new Promise((resolve, reject) => {
+  cloudinary.uploader.upload_stream(
+    { folder: "cards" },
+    (error, result) => {
+      if (error) return reject(error);
+      resolve(result.secure_url);
+    }
+  ).end(pngBuffer);
+});
+
+return imageUrl;
 }
 
 function row(label, value) {
