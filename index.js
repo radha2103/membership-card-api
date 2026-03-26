@@ -6,20 +6,17 @@ const app = express();
 app.use(express.json());
 
 app.post('/generate-card', async (req, res) => {
-    const { phone, name, membership_id, epic_no, ac_no, constituency, photo_url } = req.body;
+    const { name, booth, voter_id, ward_name, state, valid_from, photo_url } = req.body;
 
-    if (!phone || !name) {
-        return res.status(400).json({ error: 'phone and name are required' });
-    }
+    
 
     try {
         const imageUrl = await generateCard(
-            phone, name, membership_id, epic_no, ac_no, constituency, photo_url
+            name, booth, voter_id, ward_name, state, valid_from, photo_url
         );
 
         return res.json({
-            success: true,
-            url: imageUrl
+            imageUrl
         });
 
     } catch (err) {
