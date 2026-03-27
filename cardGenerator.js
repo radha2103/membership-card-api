@@ -109,6 +109,7 @@ async function generateCard(name, booth, voter_id, ward_name, state, valid_from,
                           borderRadius: 4,
                           border: '2px solid #cccccc',
                           top: 15,
+                          marginBottom:13,
                         }
                       }
                     },
