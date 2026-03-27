@@ -25,7 +25,7 @@ async function fetchBase64(url, fallbackBase64, fallbackMime = 'image/png') {
   return `data:${mime};base64,${base64}`;
 }
 
-async function generateCard(name, booth, voter_id, ward_name, state, valid_from, photo_url, qr_url) {
+async function generateCard(name, booth, voter_id, ward_name, state, valid_from, photo_url, qr_url, booth_name) {
   const photoSrc = await fetchBase64(photo_url, photoBase64, 'image/png');
 
   // Fetch QR image if provided
@@ -147,7 +147,7 @@ async function generateCard(name, booth, voter_id, ward_name, state, valid_from,
                     },
                     detailRow('Booth No', booth || ''),
                     detailRow('Voter Id No', voter_id || ''),
-                    detailRow('Ward Name', ward_name || ''),
+                    detailRow(booth_name ? 'Booth Name' : 'Ward Name', booth_name || ward_name || ''),
                     detailRow('State', state),
                     detailRow('Valid From', valid_from || ''),
                   ]
