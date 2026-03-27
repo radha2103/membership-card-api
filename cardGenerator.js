@@ -16,14 +16,33 @@ const fontBold = fs.readFileSync(path.join(__dirname, 'fonts', 'Roboto-Bold.ttf'
 const photoBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'user.png')).toString('base64');
 const bgBase64 = fs.readFileSync(path.join(__dirname, 'fonts', 'bg.png')).toString('base64');
 
-async function generateCard(name, booth, voter_id, ward_name, state, valid_from, photo_url) {
-  let photoSrc = `data:image/png;base64,${photoBase64}`;
-  if (photo_url) {
-    const response = await fetch(photo_url);
-    const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
-    const mime = response.headers.get('content-type') || 'image/jpeg';
-    photoSrc = `data:${mime};base64,${base64}`;
+async function fetchBase64(url, fallbackBase64, fallbackMime = 'image/png') {
+  if (!url) return `data:${fallbackMime};base64,${fallbackBase64}`;
+  const response = await fetch(url);
+  const buffer = await response.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString('base64');
+  const mime = response.headers.get('content-type') || fallbackMime;
+  return `data:${mime};base64,${base64}`;
+}
+
+async function generateCard(name, booth, voter_id, ward_name, state, valid_from, photo_url, qr_url) {
+  const photoSrc = await fetchBase64(photo_url, photoBase64, 'image/png');
+
+  // Fetch QR image if provided
+  let qrElement = null;
+  if (qr_url) {
+    const qrSrc = await fetchBase64(qr_url, null, 'image/png');
+    qrElement = {
+      type: 'img',
+      props: {
+        src: qrSrc,
+        style: {
+          width: 80,
+          height: 80,
+          objectFit: 'contain',
+        }
+      }
+    };
   }
 
   const element = {
@@ -35,7 +54,6 @@ async function generateCard(name, booth, voter_id, ward_name, state, valid_from,
         display: 'flex',
         position: 'relative',
         fontFamily: 'Roboto',
-        
       },
       children: [
         // ── BACKGROUND IMAGE (full card) ──
@@ -52,7 +70,6 @@ async function generateCard(name, booth, voter_id, ward_name, state, valid_from,
         },
 
         // ── OVERLAY: Photo + Details ──
-        // top: 168 = below header+badge area; bottom: 90 = above footer
         {
           type: 'div',
           props: {
@@ -68,20 +85,36 @@ async function generateCard(name, booth, voter_id, ward_name, state, valid_from,
               alignItems: 'flex-start',
             },
             children: [
-              // Photo
+              // Left column: Photo + QR
               {
-                type: 'img',
+                type: 'div',
                 props: {
-                  src: photoSrc,
                   style: {
-                    width: 140,
-                    height: 170,
-                    objectFit: 'cover',
-                    borderRadius: 4,
-                    border: '2px solid #cccccc',
-                    marginLeft:40,
-                    top:15,
-                  }
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 8,
+                    marginLeft: 40,
+                  },
+                  children: [
+                    // Photo
+                    {
+                      type: 'img',
+                      props: {
+                        src: photoSrc,
+                        style: {
+                          width: 140,
+                          height: 170,
+                          objectFit: 'cover',
+                          borderRadius: 4,
+                          border: '2px solid #cccccc',
+                          top: 15,
+                        }
+                      }
+                    },
+                    // QR Code (rendered only if qr_url provided)
+                    ...(qrElement ? [qrElement] : []),
+                  ]
                 }
               },
 
@@ -95,7 +128,7 @@ async function generateCard(name, booth, voter_id, ward_name, state, valid_from,
                     gap: 10,
                     flex: 1,
                     paddingTop: 5,
-                    marginLeft:20,
+                    marginLeft: 20,
                   },
                   children: [
                     // Name

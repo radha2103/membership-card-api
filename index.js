@@ -6,13 +6,13 @@ const app = express();
 app.use(express.json());
 
 app.post('/generate-card', async (req, res) => {
-    const { name, booth, voter_id, ward_name, state, valid_from, photo_url } = req.body;
+    const { name, booth, voter_id, ward_name, state, valid_from, photo_url,qr_url } = req.body;
 
     
 
     try {
         const imageUrl = await generateCard(
-            name, booth, voter_id, ward_name, state, valid_from, photo_url
+            name, booth, voter_id, ward_name, state, valid_from, photo_url,qr_url
         );
 
         return res.json({
